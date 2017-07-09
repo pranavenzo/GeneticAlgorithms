@@ -26,18 +26,18 @@ def crossover(chromosomeA, chromosomeB, crossOverProbability, randomFunction, my
 
 
 # Simple fitness function that counts the number of 1s in chromosome
-def fitnessFuntion(chromosome):
-    ones = 0
-    for i in chromosome:
-        if i == 1:
-            ones += 1
-    return ones
+def fitnessFuntion(chromosome, targetChromosome):
+    matches = 0
+    for i in range(0, len(chromosome)):
+        if chromosome[i] == targetChromosome[i]:
+            matches += 1
+    return matches
 
 
 def myprint(chromosomePool, generationNumber):
     print 'Generation :' + str(generationNumber)
     for chromosome in chromosomePool:
-        print str(chromosome) + '--> fitness : ' + str(fitnessFuntion(chromosome))
+        print str(chromosome) + '--> fitness : ' + str(fitnessFuntion(chromosome, tagetChromosome))
 
 
 def cleanUp(nextGenChromosomePool, randomFunction):
@@ -45,18 +45,18 @@ def cleanUp(nextGenChromosomePool, randomFunction):
     total = 0.0
     nextGenChromosomePool.sort(comparator)
     for chromosome in nextGenChromosomePool:
-        total += fitnessFuntion(chromosome)
+        total += fitnessFuntion(chromosome, tagetChromosome)
 
     for chromosome in nextGenChromosomePool:
         ran = random()
-        if ran <= (fitnessFuntion(chromosome) / total):
+        if ran <= (fitnessFuntion(chromosome, tagetChromosome) / total):
             cleanedUp.append(chromosome)
 
     return cleanedUp
 
 
 def comparator(x, y):
-    return fitnessFuntion(x) - fitnessFuntion(y)
+    return fitnessFuntion(x, tagetChromosome) - fitnessFuntion(y, tagetChromosome)
 
 
 def evolve(chromosomePopulation, myrandint, eliteNum):
@@ -88,13 +88,16 @@ def createChromosomePool(length, lengthPerGene):
     return chromosomePool
 
 
+tagetChromosome = [0, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+
+
 def main():
     target = 10
-    chromosomePool = createChromosomePool(8, target)
+    chromosomePool = createChromosomePool(10, target)
     for i in range(1, 4000):
         chromosomePool.sort(comparator, reverse=True)
         myprint(chromosomePool, i)
-        if fitnessFuntion(chromosomePool[0]) == target:
+        if fitnessFuntion(chromosomePool[0], tagetChromosome) == target:
             break
         chromosomePool = evolve(chromosomePool, randint, 3)
 
