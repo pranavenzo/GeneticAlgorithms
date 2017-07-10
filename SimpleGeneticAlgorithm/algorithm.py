@@ -1,4 +1,5 @@
 from random import *
+import math
 
 
 # mutate chromosome based on stepsize and probability of mutation
@@ -17,7 +18,7 @@ def crossover(chromosomeA, chromosomeB, crossOverProbability, randomFunction, my
     ran = randomFunction()
     if ran > crossOverProbability:
         return (chromosomeA, chromosomeB)
-    crossOverLength = myrandInt(0, len(chromosomeA) - 1)
+    crossOverLength = myrandInt(0, len(chromosomeA))
     # random length of first chromosome
     # crossed over with the same sized piece in the second half of second chromosome
     newchromosomeA = chromosomeA[0:crossOverLength] + chromosomeB[crossOverLength:len(chromosomeB)]
@@ -26,7 +27,9 @@ def crossover(chromosomeA, chromosomeB, crossOverProbability, randomFunction, my
 
 
 # Simple fitness function that counts the number of 1s in chromosome
-def fitnessFuntion(chromosome, targetChromosome):
+def fitnessFuntion(chromosome):
+    # number = int(''.join(str(e) for e in chromosome), 2)
+    # return int(-4 * math.pow(number, 3) + math.pow(number, 6))
     matches = 0
     for i in range(0, len(chromosome)):
         if chromosome[i] == targetChromosome[i]:
@@ -37,7 +40,7 @@ def fitnessFuntion(chromosome, targetChromosome):
 def myprint(chromosomePool, generationNumber):
     print 'Generation :' + str(generationNumber)
     for chromosome in chromosomePool:
-        print str(chromosome) + '--> fitness : ' + str(fitnessFuntion(chromosome, tagetChromosome))
+        print str(chromosome) + '--> fitness : ' + str(fitnessFuntion(chromosome))
 
 
 def cleanUp(nextGenChromosomePool, randomFunction):
@@ -45,18 +48,18 @@ def cleanUp(nextGenChromosomePool, randomFunction):
     total = 0.0
     nextGenChromosomePool.sort(comparator)
     for chromosome in nextGenChromosomePool:
-        total += fitnessFuntion(chromosome, tagetChromosome)
+        total += fitnessFuntion(chromosome)
 
     for chromosome in nextGenChromosomePool:
         ran = random()
-        if ran <= (fitnessFuntion(chromosome, tagetChromosome) / total):
+        if ran <= (fitnessFuntion(chromosome) / total):
             cleanedUp.append(chromosome)
 
     return cleanedUp
 
 
 def comparator(x, y):
-    return fitnessFuntion(x, tagetChromosome) - fitnessFuntion(y, tagetChromosome)
+    return fitnessFuntion(x) - fitnessFuntion(y)
 
 
 def evolve(chromosomePopulation, myrandint, eliteNum):
@@ -88,16 +91,16 @@ def createChromosomePool(length, lengthPerGene):
     return chromosomePool
 
 
-tagetChromosome = [0, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+targetChromosome = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 
 
 def main():
-    target = 10
+    target = len(targetChromosome)
     chromosomePool = createChromosomePool(10, target)
     for i in range(1, 4000):
         chromosomePool.sort(comparator, reverse=True)
         myprint(chromosomePool, i)
-        if fitnessFuntion(chromosomePool[0], tagetChromosome) == target:
+        if fitnessFuntion(chromosomePool[0]) == target:
             break
         chromosomePool = evolve(chromosomePool, randint, 3)
 
